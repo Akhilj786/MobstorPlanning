@@ -34,7 +34,7 @@
 				//$("form").submit(alert_func);
 			});
 			function Table_fill() {
-				alert("Save");
+				//alert("Save");
 				var size = $('#size_req').val();
 
 				jQuery.ajax({
