@@ -1,0 +1,26 @@
+<html>
+<head>
+<script type="text/javascript"
+  src="../js/dygraph-combined.js"></script>
+</head>
+<body>
+<div id="graphdiv"> </div>
+<script type="text/javascript">
+	var csv_data="Date,Temperature,Fsize,Fval\n" +
+    "2008-05-07 00:00:00,75,,100\n" +
+    "2008-05-08 00:00:00,70,20,40\n" +
+    "2008-05-09 00:00:00,1000,30,50\n" +
+    "2008-05-10 00:00:00,,90,50\n";
+  g = new Dygraph(
+
+    // containing div
+    document.getElementById("graphdiv"),
+
+    // CSV or path to a CSV file.
+    
+    csv_data
+
+  );
+</script>
+</body>
+</html>
