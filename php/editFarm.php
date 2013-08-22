@@ -7,9 +7,9 @@ include 'mysql_lib.php';
 	$fsize=$_POST['fsize'];
 	$frps=$_POST['frps'];
 	$fwps=$_POST['fwps'];
-	$sql = "update farm_benchmark set size='$fsize',rps='$frps',wps='$fwps' where name='$fname' ";
-		echo $sql;	
-	if ($result = mysql_query($sql)) {
+	$sql_query = "update farm_benchmark set size='$fsize',rps='$frps',wps='$fwps' where name='$fname' ";
+			
+	if (mysql_query($sql_query)) {
 		echo "Succesfully Update Farm Benchmark";
 	} else {
 		echo "No Success";
