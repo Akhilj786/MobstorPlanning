@@ -17,8 +17,36 @@
 				.appendTo("#yahoologoid");
 
 				$("#fname_req").autocomplete({
-					source : "course.php",
-					minLength : 1
+					source : "get_farm.php",
+					minLength : 1,
+					select:function(evt, ui)
+					{
+			// when a zipcode is selected, populate related fields in this form
+					var fname=ui.item.value;
+					var fsize=ui.item.size;
+					var frps=ui.item.rps;
+					var fwps=ui.item.wps;
+			this.form.fsize.value = fsize;
+			this.form.frps.value = frps;
+			this.form.fwps.value = fwps;
+					$('#edit_id').click(function(){
+							jQuery.ajax({
+					type : "POST",
+					url : "editFarm.php",
+					data : {fname:$('#fname_req').val(),fsize:$('#fsize_req').val(),frps:$('#frps_req').val(),fwps:$('#fwps_req').val()},
+					cache : false,
+					success : function(response) {
+						if (response) {
+							alert(response);
+
+						}
+
+					}
+				});
+						});
+					
+			
+					}
 				});
 				
 				$("#dcancel_id").click(function() {
@@ -30,17 +58,21 @@
 				
 
 			});
+			
+			
 			$('#Save_id').click(Table_fill);
-				//$("form").submit(alert_func);
+				
 			});
+			
+			
 			function Table_fill() {
 				//alert("Save");
 				var size = $('#size_req').val();
-
+				var wps=$('#wps_req').val();
 				jQuery.ajax({
 					type : "POST",
 					url : "Actual_Algo.php",
-					data : 'size=' + size,
+					data : {size:size,wps:wps},
 					cache : false,
 					success : function(response) {
 						if (response) {
@@ -138,7 +170,7 @@
 						<table id="Farm_prediction" class="bordered table" style="display: none">
 							<thead>
 								<tr>
-									<th>FarmName</th><th>Days</th><th>Total</th>
+									<th>FarmName</th><th>Days</th><th>%Utilization</th>
 								</tr>
 							</thead>
 							<tbody>

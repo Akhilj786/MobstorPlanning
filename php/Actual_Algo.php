@@ -1,7 +1,8 @@
 <?php
 //First comment
-if (isset($_POST['size']) && isset($_POST['size'])) {
+if (isset($_POST['size']) && isset($_POST['wps'])) {
 	$val = $_POST['size'];
+	$wps_val=$_POST['wps'];
 	$farm_list = array("usm1", "use12", "use18", "use26", "usw10", "usw26", "use70", "usw70");
 
 	include 'mysql_lib.php';
@@ -32,7 +33,8 @@ if (isset($_POST['size']) && isset($_POST['size'])) {
 			//echo $farm_list[$i]." ".$alpha." ".$beta."<br>";
 			$final_day = Final_compute($size, $size_array, $date_array, $alpha, $beta, $val, $farm_list[$i]);
 			$final_day1 = Final_compute($size, $put_array, $date_array, $alpha1, $beta1, $val, $farm_list[$i]);
-			$HashList[str_replace("'", "", $farm_list[$i])] = $final_day;
+			
+			$HashList[str_replace("'", "", $farm_list[$i])] = min($final_day,$final_day1);
 
 		}
 
@@ -40,17 +42,20 @@ if (isset($_POST['size']) && isset($_POST['size'])) {
 	arsort($HashList);
 	//$HashList = array_slice($HashList,0,5);
 	
-	//$sql = "select size from farm_benchmark where fname like" . "'$farm_list[$i]'";
 	$string;
-	//="<table id="."Farm_prediction ". "border="."2>
+	
 
-	foreach ($HashList as $key => $val) {
-		$sizesql = "select size from farm_benchmark where name like " ."'$key'";
+	foreach ($HashList as $key => $val1) {
+		//$sizesql = "select size from farm_benchmark where name like " ."'$key'";
+		
+		$sizesql = "select (100/size*(select (fsize+'$val') from farm_use where fdate=curdate() and fname='$key')) as size from farm_benchmark where name='$key'";
+		
+		
 		//echo $sizesql;
 		$result1 = mysql_query($sizesql);
 		$val_row = mysql_fetch_assoc($result1);
-		$fullsize = ($val_row['size']);
-		$string .= "<tr><td id=$key>" . $key . "</td><td>" . $val ."</td><td>".$fullsize."</td></tr>";
+		$fullsize = round($val_row['size']);
+		$string .= "<tr><td id=$key>" . $key . "</td><td>" . $val1 ."</td><td>".$fullsize."</td></tr>";
 	}
 	echo $string . "</table>";
 }
