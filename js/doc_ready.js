@@ -7,6 +7,7 @@
 				.attr('src', url)// set src
 				.appendTo("#yahoologoid");
 
+				//Ajax Farmname autocomplete
 				$("#fname_req").autocomplete({
 					source : "get_farm.php",
 					minLength : 1,
@@ -19,6 +20,7 @@
 						this.form.fsize.value = fsize;
 						this.form.frps.value = frps;
 						this.form.fwps.value = fwps;
+						//edit Farm_benchmark 
 						$('#edit_id').click(function() {
 							jQuery.ajax({
 								type : "POST",
@@ -57,7 +59,7 @@
 			});
 
 			function Table_fill() {
-				
+				//Prediction table
 				
 				
 				if($('#size_req').val()!=null && $('#size_req').val()!==''){
@@ -73,7 +75,7 @@
 					cache : false,
 					success : function(response) {
 						if (response) {
-							$("#FarmTableid").show();
+							$('#FarmTableid').show();
 							$('#Farm_prediction').show();
 							$('#Farm_prediction tbody').append(response);
 
@@ -83,5 +85,5 @@
 				});
 				}
 				else
-				alert("dekh ke daal");
+				alert("Fill Entire Form");
 			}

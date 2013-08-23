@@ -1,4 +1,5 @@
 <?php
+//Fill Form details based on autocomplete selection
 include 'mysql_lib.php';
 if (isset($_GET['term'])) {
 	$return_arr = array();

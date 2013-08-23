@@ -1,14 +1,19 @@
 <?php
-
+//Actual Double smoothing Algorithm
+//Read Wikipedia for in depth understanding(for simplicity purpose all parameterName remains the same as in Wikipedia)
+//Use farmwise data to determine Minimum no of days it could last
+//capture size and wps paramter
 if (isset($_POST['size']) && isset($_POST['wps'])) {
 	$val = $_POST['size'];
 	$wps_val = $_POST['wps'];
 	$farm_list = array("usm1", "use12", "use18", "use26", "usw10", "usw26", "use70", "usw70");
-
+	
+	//mysql connection
 	include 'mysql_lib.php';
 	$HashList = array();
-	$size1 = count($farm_list);
-	for ($i = 0; $i < $size1; $i++) {
+	$farm_size = count($farm_list);
+	//Farmwise Parameter
+	for ($i = 0; $i < $farm_size; $i++) {
 
 		$size_array = array();
 		$date_array = array();
@@ -26,38 +31,40 @@ if (isset($_POST['size']) && isset($_POST['wps'])) {
 
 			}
 			$size = count($size_array);
-
+			//Call for Best alpha beta for both Size and WPS
 			list($alpha, $beta) = compute_parameter($size, $size_array, $date_array, $farm_list[$i]);
 			list($alpha1, $beta1) = compute_parameter($size, $put_array, $date_array, $farm_list[$i]);
 
-			$final_day = Final_compute($size, $size_array, $date_array, $alpha, $beta, $val, $farm_list[$i]);
-			$final_day1 = Final_compute1($size, $put_array, $date_array, $alpha1, $beta1, $wps_val, $farm_list[$i]);
-			$minday;
-			if ($final_day >= 0 && $final_day1 >= 0)
-				$minday = min($final_day, $final_day1);
-			elseif ($final_day < 0 && $final_day1 < 0)
-				$minday = max($final_day, $final_day1);
+			$sizeFinalday = Final_compute($size, $size_array, $date_array, $alpha, $beta, $val, $farm_list[$i]);
+			$wpsFinalday = Final_compute1($size, $put_array, $date_array, $alpha1, $beta1, $wps_val, $farm_list[$i]);
+			
+			$minday;//Capature Minimum value among sizeFinalDay and wpsFinalDay
+			if ($sizeFinalday >= 0 && $wpsFinalday >= 0)
+				$minday = min($sizeFinalday, $wpsFinalday);
+			elseif ($sizeFinalday < 0 && $wpsFinalday < 0)
+				$minday = max($sizeFinalday, $wpsFinalday);
 			else {
 				if ($final_day < 0)
-					$minday = $final_day1;
+					$minday = $wpsFinalday;
 				else
-					$minday = $final_day;
+					$minday = $sizeFinalday;
 			}
 			$HashList[str_replace("'", "", $farm_list[$i])] = $minday;
 
 		}
 
 	}
+	//Hashlist contains farmlist and no of days based on max no of days the farm could last
 	arsort($HashList);
 	$string;
 	foreach ($HashList as $key => $val1) {
-
-		$sizesql = "select (100/size*(select (fsize+$val) from farm_use where fdate=curdate() and fname='$key')) as size," . 
+		//Find size and wps utilization both in %
+		$size_wpssql = "select (100/size*(select (fsize+$val) from farm_use where fdate=curdate() and fname='$key')) as size," . 
 				   " (100/wps*(select (fput_ops+$wps_val) from farm_use where fdate=curdate() and fname='$key')) as wps" . 
 				   " from farm_benchmark" . 
 				   " where name='$key' ";
 		
-		$result1 = mysql_query($sizesql);
+		$result1 = mysql_query($size_wpssql);
 		$val_row = mysql_fetch_assoc($result1);
 		$util_size = round($val_row['size']);
 		$util_wps = round($val_row['wps']);
@@ -67,18 +74,20 @@ if (isset($_POST['size']) && isset($_POST['wps'])) {
 	}
 	echo $string . "</table>";
 }
-
+//Find best Alpha,Beta required for Double exponentail Algorithm
 function compute_parameter($size, $x_t, $date, $fname) {
 
-	$fullstring = "fname,fdate,fsize,smoothing_val,best_fit\n";
+	#$fullstring = "fname,fdate,fsize,smoothing_val,best_fit\n";
 	$bestalpha = 0;
 	$bestbeta = 0;
 	$besterror = 10000;
 	$string;
 	$s_t;
 	$b_t;
+	//For Loop for Alpha
 	for ($a = 0.1; $a < 1.0; $a = $a + 0.05) {
 		$alpha = $a;
+		//For Loop for Beta
 		for ($b = 0.1; $b < 1.0; $b = $b + 0.05) {
 			$beta = $b;
 			$s_t = array();
@@ -88,6 +97,7 @@ function compute_parameter($size, $x_t, $date, $fname) {
 			$mean_square = 0;
 			$mean_sqerr = 0;
 			$mean_bef = 0;
+			//for loop for prediction of best alpha and beta
 			for ($i = 0; $i < $size; $i++) {
 				if ($i < 1) {
 
@@ -113,8 +123,9 @@ function compute_parameter($size, $x_t, $date, $fname) {
 
 				$mean_square = $mean_square + $mean_error[$i];
 			}
+			//Relative mean error(RME)
 			$mean_bef = ($mean_square / $size);
-
+			//Alpha Beta with Minimum RME
 			if ($besterror > $mean_bef) {
 				$bestalpha = $a;
 				$bestbeta = $b;
@@ -128,7 +139,7 @@ function compute_parameter($size, $x_t, $date, $fname) {
 
 	return array($bestalpha, $bestbeta);
 }
-
+//Prediction based on size parameter using best alpha beta
 Function Final_compute($size, $x_t, $date_t, $alpha, $beta, $val, $fname) {
 	include 'mysql_lib.php';
 	$s_t = array();
@@ -165,7 +176,7 @@ Function Final_compute($size, $x_t, $date_t, $alpha, $beta, $val, $fname) {
 	return (round($no_days));
 
 }
-
+//Prediction based on WPS using best alpha,beta
 Function Final_compute1($size, $x_t, $date_t, $alpha, $beta, $val, $fname) {
 	include 'mysql_lib.php';
 	$s_t = array();

@@ -1,7 +1,9 @@
 <?php
+//Mysql connection
+//Form to edit Farm Benchmark
 include 'mysql_lib.php';
 
-	
+	//Here Autocompleted farm Name will be capture and then we fill 
 	$search_string = $_POST['term'];
 	$fname=$_POST['fname'];
 	$fsize=$_POST['fsize'];
