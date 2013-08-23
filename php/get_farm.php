@@ -5,7 +5,7 @@ if (isset($_GET['term'])) {
 	$return_arr = array();
 	$search_string = $_GET['term'];
 
-	$sql = "select distinct name,size,rps,wps from farm_benchmark where name like '$search_string%' ";
+	$sql = "select distinct name,size,rps,wps from farm_benchmark where name like '$search_string%' order by name";
 			$return_arr=array();
 	if ($result = mysql_query($sql)) {
 		while ($row = mysql_fetch_assoc($result)) {

@@ -77,7 +77,8 @@
 						if (response) {
 							$('#FarmTableid').show();
 							$('#Farm_prediction').show();
-							$('#Farm_prediction tbody').append(response);
+							$('#Farm_prediction tbody').html("");
+							$('#Farm_prediction tbody').html(response);
 
 						}
 
