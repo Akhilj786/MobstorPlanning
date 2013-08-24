@@ -67,7 +67,7 @@
 				var wps = $('#wps_req').val();
 				jQuery.ajax({
 					type : "POST",
-					url : "Actual_Algo.php",
+					url : "HoltWinter.php",
 					data : {
 						size : size,
 						wps : wps
