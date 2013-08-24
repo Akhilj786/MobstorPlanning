@@ -44,7 +44,7 @@ if (isset($_POST['size']) && isset($_POST['wps'])) {
 			elseif ($sizeFinalday < 0 && $wpsFinalday < 0)
 				$minday = max($sizeFinalday, $wpsFinalday);
 			else {
-				if ($final_day < 0)
+				if ($sizefinal_day < 0)
 					$minday = $wpsFinalday;
 				else
 					$minday = $sizeFinalday;
@@ -56,7 +56,7 @@ if (isset($_POST['size']) && isset($_POST['wps'])) {
 	}
 	//Hashlist contains farmlist and no of days based on max no of days the farm could last
 	arsort($HashList);
-	$string;
+	$fullstring;
 	foreach ($HashList as $key => $val1) {
 		//Find size and wps utilization both in %
 		$size_wpssql = "select (100/size*(select (fsize+$val) from farm_use where fdate=curdate() and fname='$key')) as size," . 
@@ -68,11 +68,11 @@ if (isset($_POST['size']) && isset($_POST['wps'])) {
 		$val_row = mysql_fetch_assoc($result1);
 		$util_size = round($val_row['size']);
 		$util_wps = round($val_row['wps']);
-		$string .= "<tr><td id=$key>" . $key . "</td><td>" . $val1 . 
+		$fullstring .= "<tr><td id=$key>" . $key . "</td><td>" . $val1 . 
 				   "</td><td>" . $util_size . "</td><td>" . $util_wps .
 				   "</td></tr>";
 	}
-	echo $string . "</table>";
+	echo $fullstring . "</table>";
 }
 //Find best Alpha,Beta required for Double exponentail Algorithm
 function compute_parameter($size, $x_t, $date, $fname) {
