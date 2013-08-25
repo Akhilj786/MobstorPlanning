@@ -79,7 +79,16 @@ body {
 	
 }
 
-
+.addFarmbenchmark
+{
+	display:inline;
+	float:right;
+	margin-right:40px;
+	margin-top:4px;
+	width:40px;
+	height:6px;
+	
+}
 .provision_form{
 				width:30%;
 				height:40%;
@@ -240,7 +249,7 @@ button::-moz-focus-inner, input::-moz-focus-inner {
 	width:100%;
 	height:52%;
 	clear:both;
-	border:1px solid #2D1152;
+	/*border:1px solid #2D1152;*/
 	
 }
 
@@ -287,7 +296,17 @@ width:90%;
 
 
 	/*td, th { padding: .3em; border: 1px #ccc solid; }*/
-	
-thead { background: ; }
+tbody { 
+	background: #9cf; 
+	} 		
 
-tbody { background: #9cf; } 		
+.ui-autocomplete { 
+	height: 100px; 
+	overflow-y: scroll; 
+	overflow-x: hidden;
+	}
+.dialog	
+{
+	background-color: #2D1152;
+  border-color: #2D1152;
+}
